@@ -2,7 +2,8 @@ const srInput = document.getElementById('srInput');
 const reqBTN = document.getElementById('reqBTN');
 const applyBTN = document.getElementById('applyBTN');
 document.getElementById('reqBTN').addEventListener('click', async (e) => {
-    const srNumber = document.getElementById('srInput').value;
+    //const srNumber = document.getElementById('srInput').value;
+    const srNumber = srInput.value;
     const srGetUrl = `http://10.10.1.14:3002/infra/sbssr/api/sr/body/${srNumber}`;
     try {
         const rawResponse = await fetch(srGetUrl);
@@ -24,6 +25,11 @@ document.getElementById('reqBTN').addEventListener('click', async (e) => {
 document.getElementById('applyBTN').addEventListener('click', () => {
     try {
         const srBody = JSON.parse(document.getElementById('result').value);
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            chrome.tabs.sendMessage(tabs[0].id, {greeting: "hello", srBody}, function(response) {
+              console.log(response.farewell);
+            });
+        });
     } catch {
         alert('not valid json type. try "send" again!')
     }

@@ -10,5 +10,12 @@
     },
     "page_action" : {
         "default_popup" : "popup.html"
-    }
+    },
+    "content_scripts": [
+        {
+          "matches": ["https://wise.sbs.co.kr/*"],
+          "run_at": "document_idle",
+          "js": ["content.js"]
+        }
+    ]
   }
