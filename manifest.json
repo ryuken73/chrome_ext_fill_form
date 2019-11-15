@@ -3,7 +3,7 @@
     "version": "1.0",
     "description": "fill html form using ajax response",
     "manifest_version": 2,
-    "permissions" : ["declarativeContent"],
+    "permissions" : ["tabs","declarativeContent","contextMenus"],
     "background" : {
         "scripts" : ["background.js"],
         "persistent" : false
@@ -13,7 +13,7 @@
     },
     "content_scripts": [
         {
-          "matches": ["https://wise.sbs.co.kr/*"],
+          "matches": ["https://wise.sbs.co.kr/wise/websquare/websquare.html?w2xPath=/gwlib/apps/support/csrdb/square/reqsupport_edit.xml&*"],
           "run_at": "document_idle",
           "js": ["content.js"]
         }
