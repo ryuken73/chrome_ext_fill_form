@@ -3,6 +3,20 @@
 // refer to https://stackoverflow.com/questions/12395722/can-the-window-object-be-modified-from-a-chrome-extension,
 // try injecting script into web page
 
+const getBaseURL = () => {
+    return new Promise((resolve,reject) => {
+        const savedKey = 'sbssrUrl';
+        try {
+            chrome.storage.local.get(savedKey, (result) => {
+                resolve(result[savedKey])
+            })
+        } catch (error) {
+            console.error(error);
+            reject(error)
+        }
+    })
+}
+
 const runEmbedded = (args) => {
     // by injecting script, i can access original web page's variable's and functions
     // sname, sdeptname and sdetails are websqaure's component.
@@ -38,11 +52,39 @@ const handleFillForm = (request, sender, sendResponse) => {
     btn.innerHTML="접수[연동]";
     document.getElementById('formbutton').appendChild(btn); 
     const originalApplyBtn = document.getElementById('btnreceipt');
-    btn.addEventListener('click', (e) => {
-        console.log('applying');
-        // original button event trigger
-        originalApplyBtn.dispatchEvent(new Event('click'));
+    btn.addEventListener('click', async (e) => {
         // send to sr-server case was applied
+        try {
+            console.log('update sr')
+            const {case_id, user_id, user_nm, dept_nm, sr_body} = request.srBody;
+            const baseUrl = await getBaseURL();
+            const SR_GETBODY_URL = `${baseUrl}/sr/body/${case_id}`;
+            const fetchOptions = {
+                method : 'PUT',
+                body : JSON.stringify({
+                    user_id, 
+                    user_nm,
+                    dept_nm,
+                    sr_body,
+                    siis_saved_flag : 'Y'
+                }),
+                headers: new Headers({
+                    'Content-Type': 'application/json'
+                })
+            }
+            const rawResponse = await fetch(SR_GETBODY_URL, fetchOptions);
+            const response = await rawResponse.json();
+            if(response.success) {
+                console.log(`change siis_saved_flag to Y success! ${case_id}`);
+                // original button event trigger
+                originalApplyBtn.dispatchEvent(new Event('click'));
+                return response.result;
+            }            
+            return [];
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
     })
 }
 

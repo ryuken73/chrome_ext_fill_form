@@ -1,23 +1,48 @@
 const URL_PATTERN = 'https://wise.sbs.co.kr/wise/websquare/websquare.html?w2xPath=/gwlib/apps/support/csrdb/square/reqsupport_edit.xml*';
-const SBSSR_BASE_URL = 'http://10.10.1.14:3002/infra/sbssr/api';
+//const SBSSR_BASE_URL = 'http://10.10.1.14:3002/infra/sbssr/api';
 const PARENT_CONTEXT_ID = 'srListParent';
 
+const getBaseURL = () => {
+    return new Promise((resolve,reject) => {
+        const savedKey = 'sbssrUrl';
+        try {
+            chrome.storage.local.get(savedKey, (result) => {
+                resolve(result[savedKey])
+            })
+        } catch (error) {
+            console.error(error);
+            reject(error)
+        }
+    })
+}
+
 const getSRBody = async (sr_id) => {
-    const SR_GETBODY_URL = `${SBSSR_BASE_URL}/sr/body/${sr_id}`;
-    const rawResponse = await fetch(SR_GETBODY_URL);
-    const response = await rawResponse.json();
-    if(response.success) return response.result;
-    return [];
+    try {
+        const baseUrl = await getBaseURL();
+        const SR_GETBODY_URL = `${baseUrl}/sr/body/${sr_id}`;
+        const rawResponse = await fetch(SR_GETBODY_URL);
+        const response = await rawResponse.json();
+        if(response.success) return response.result;
+        return [];
+    } catch (err) {
+        return [];
+    }
 }
 
 const getTodaySRList = async () => {
-    const now = new Date();
-    const todayString = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
-    const SR_GETLIST_URL = `${SBSSR_BASE_URL}/sr/list?fromDate=${todayString}`;
-    const rawResponse = await fetch(SR_GETLIST_URL);
-    const response = await rawResponse.json();
-    if(response.success) return response.result;
-    return [];
+    try {
+        const now = new Date();
+        const todayString = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+        const baseUrl = await getBaseURL();
+        const SR_GETLIST_URL = `${baseUrl}/sr/list?fromDate=${todayString}&siisSaved=N`;
+        const rawResponse = await fetch(SR_GETLIST_URL);
+        const response = await rawResponse.json();
+        if(response.success) return response.result;
+        return [];
+    } catch (err) {
+        return [];
+    }
+
 }
 
 const onClickHandlerContext  = async (info, tab) => {
@@ -44,6 +69,7 @@ const refreshContextMenu = () => {
         });
         try {
             const srList = await getTodaySRList();
+            srList.length === 0 && chrome.contextMenus.create({title : '없음'});
             srList.map((sr,index) => {
                 console.log(sr);
                 const {case_id, user_nm, dept_nm, sr_body} = sr;
@@ -62,8 +88,6 @@ const refreshContextMenu = () => {
 }
 
 chrome.contextMenus.onClicked.addListener(onClickHandlerContext);
-
-
 
 console.log('background outer start!');
 
