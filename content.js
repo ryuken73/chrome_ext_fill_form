@@ -19,6 +19,7 @@ const embed = (fn, args) => {
 }
 
 const handleFillForm = (request, sender, sendResponse) => {
+    // when background js send fillForm message
     const args = JSON.stringify(request.srBody);
     // to set websquare's component data, use id.setValue() ( learn by youtube)
     // but, content script cannot access original web page's variables and functions
@@ -26,6 +27,23 @@ const handleFillForm = (request, sender, sendResponse) => {
     // refer to stackoverflow,  injecting script into web page and pass arguments is only solution
     embed(runEmbedded, args);
     sendResponse({farewell:'goodbye'})
+    // add button to tell sr-server case accepted
+    try {
+        document.getElementById('applySR').remove();
+    } catch (err) {
+        console.error('previous button not exists!');
+    }
+    const btn = document.createElement('button');
+    btn.setAttribute('id', 'applySR');
+    btn.innerHTML="접수[연동]";
+    document.getElementById('formbutton').appendChild(btn); 
+    const originalApplyBtn = document.getElementById('btnreceipt');
+    btn.addEventListener('click', (e) => {
+        console.log('applying');
+        // original button event trigger
+        originalApplyBtn.dispatchEvent(new Event('click'));
+        // send to sr-server case was applied
+    })
 }
 
 const handlers = {

@@ -1,5 +1,5 @@
 const URL_PATTERN = 'https://wise.sbs.co.kr/wise/websquare/websquare.html?w2xPath=/gwlib/apps/support/csrdb/square/reqsupport_edit.xml*';
-const SBSSR_BASE_URL = 'http://localhost:3009/infra/sbssr/api';
+const SBSSR_BASE_URL = 'http://10.10.1.14:3002/infra/sbssr/api';
 const PARENT_CONTEXT_ID = 'srListParent';
 
 const getSRBody = async (sr_id) => {
@@ -25,6 +25,7 @@ const onClickHandlerContext  = async (info, tab) => {
         const sr_id = info.menuItemId.split(':')[0];
         console.log(sr_id);
         const srBody = await getSRBody(sr_id);
+        console.log(srBody);
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             chrome.tabs.sendMessage(tabs[0].id, {type: "fillForm", srBody}, function(response) {
               console.log(response.farewell);
