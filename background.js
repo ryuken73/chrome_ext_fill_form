@@ -29,6 +29,19 @@ const getSRBody = async (sr_id) => {
     }
 }
 
+const getSRReply = async (sr_id) => {
+    try {
+        const baseUrl = await getBaseURL();
+        const SR_GETREPLY_URL = `${baseUrl}/reply/list/${sr_id}`;
+        const rawResponse = await fetch(SR_GETREPLY_URL);
+        const response = await rawResponse.json();
+        if(response.success) return response.result;
+        return [];
+    } catch (err) {
+        return [];
+    }
+}
+
 const getTodaySRList = async () => {
     try {
         const now = new Date();
@@ -50,6 +63,8 @@ const onClickHandlerContext  = async (info, tab) => {
         const sr_id = info.menuItemId.split(':')[0];
         console.log(sr_id);
         const srBody = await getSRBody(sr_id);
+        const srReply = await getSRReply(sr_id);
+        srBody.replies = srReply;
         console.log(srBody);
         chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
             chrome.tabs.sendMessage(tabs[0].id, {type: "fillForm", srBody}, function(response) {
