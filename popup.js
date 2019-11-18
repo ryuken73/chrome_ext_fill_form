@@ -3,7 +3,7 @@ const reqBTN = document.getElementById('reqBTN');
 const applyBTN = document.getElementById('applyBTN');
 document.getElementById('reqBTN').addEventListener('click', async (e) => {
     const srNumber = srInput.value;
-    const srGetUrl = `http://localhost:3009/infra/sbssr/api/sr/body/${srNumber}`;
+    const srGetUrl = `http://10.10.1.14:3002/infra/sbssr/api/sr/body/${srNumber}`;
     
     try {
         const rawResponse = await fetch(srGetUrl);
