@@ -108,12 +108,7 @@ const handleFillForm = async (request, sender, sendResponse) => {
     // refer to stackoverflow,  injecting script into web page and pass arguments is only solution
     embed(runEmbedded, args);
     sendResponse({farewell:'goodbye'})
-    // add button to tell sr-server case accepted
-    try {
-        document.getElementById('applySR').remove();
-    } catch (err) {
-        console.error('previous button not exists!');
-    }
+
     // add image to dext5 body
     const {imageList} = request.srBody;
     const imageBlobs = await getImageList(imageList);
@@ -122,7 +117,10 @@ const handleFillForm = async (request, sender, sendResponse) => {
     const innerFrame = outerFrame.contentWindow.document.getElementById('dext_frame_WEC');    
     const dextFrame = innerFrame.contentWindow.document.getElementById('dext5_design_WEC');
     const innerDoc = dextFrame.contentDocument || iframe.contentWindow.document;
-    const dext5Body = innerDoc.getElementById('dext_body');
+    /// remove previous images
+    // console.log(innerDoc.getElementsByTagName('image'));
+    const dext5Body = innerDoc.getElementById('dext_body');    
+
     /// append image (as base64)
     imageBlobs.map(async blob => {
         const imgTag = innerDoc.createElement('image');
@@ -131,13 +129,20 @@ const handleFillForm = async (request, sender, sendResponse) => {
         imgTag.setAttribute('src', base64Img);
     })
 
+    // remove previous link
+    try {
+        document.getElementById('applySR').remove();
+    } catch (err) {
+        console.log('previous button not exists!');
+    }
     // add srApply link
     const srApplyLink = document.createElement('a');
     srApplyLink.setAttribute('href', '#');
+    srApplyLink.setAttribute('id', 'applySR');
     srApplyLink.innerHTML="SR연동접수";
     document.getElementById('group98').appendChild(srApplyLink); 
     //
-    const originalApplyBtn = document.getElementById('btnreceipt');
+
 
     // srApplyLink's click handler
     srApplyLink.addEventListener('click', async (e) => {
@@ -165,6 +170,7 @@ const handleFillForm = async (request, sender, sendResponse) => {
             if(response.success) {
                 console.log(`change siis_saved_flag to Y success! ${case_id}`);
                 // original button event trigger
+                const originalApplyBtn = document.getElementById('btnreceipt');
                 originalApplyBtn.dispatchEvent(new Event('click'));
                 chrome.runtime.sendMessage({type: "refreshMenu"}, function(response) {
                     console.log(response.message);
