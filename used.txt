@@ -13,11 +13,16 @@ chrome.contextMenus.create()
 chrome.contextMenus.onClicked.addListener()
 
 chrome.runtime.onInstalled.addListener()
+chrome.runtime.sendMessage()
 chrome.runtime.onMessage.addListener()
 
 chrome.declarativieContent.onPageChanged.addRules()
 chrome.declarativeContent.PageStateMatcher()
 chrome.declarativeContent.ShowPageAction()
+
+chrome.storage.local.get()
+chrome.storage.local.set()
+chrome.storage.local.remove()
 
 chrome.tabs.onUpdated.addListener()
 
@@ -30,11 +35,25 @@ document.documentElement.appendChild()
 document.getElementById()
 document.getElementById().addEventListener()
 document.getElementById().value
+document.getElementById().innerHTML
+document.element.setAttribute()
+document.element.appendChild()
+document.element.disptachEvent((new Event('click')))
+
+
+fetch
+response.json()
+response.blob()
 
 JSON.stringify()
 JSON.parse()
 
-object.toString() ( function to String)
+object.toString() (make function to String)
+
+new FileReader()
+reader.readAsDataURL(blob) // make blob to base64
+
+
 
 String.replace()
 

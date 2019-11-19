@@ -1,5 +1,4 @@
 const URL_PATTERN = 'https://wise.sbs.co.kr/wise/websquare/websquare.html?w2xPath=/gwlib/apps/support/csrdb/square/reqsupport_edit.xml*';
-//const SBSSR_BASE_URL = 'http://10.10.1.14:3002/infra/sbssr/api';
 const PARENT_CONTEXT_ID = 'srListParent';
 
 const getBaseURL = () => {
@@ -55,7 +54,6 @@ const getTodaySRList = async () => {
     } catch (err) {
         return [];
     }
-
 }
 
 const onClickHandlerContext  = async (info, tab) => {
@@ -127,3 +125,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
        tab.url.startsWith(targetUrl) && refreshContextMenu();
    }
 })
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+      if (request.type == "refreshMenu"){
+        console.log('receive refresh menu');
+        refreshContextMenu();
+        sendResponse({message: "refresh complete!"});
+      }
+});
