@@ -184,7 +184,6 @@ const handleFillForm = async (request, sender, sendResponse) => {
     document.getElementById('group98').appendChild(srApplyLink); 
     //
 
-
     // srApplyLink's click handler
     srApplyLink.addEventListener('click', async (e) => {
         // send to sr-server case was applied

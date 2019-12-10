@@ -40,6 +40,13 @@ document.element.setAttribute()
 document.element.appendChild()
 document.element.disptachEvent((new Event('click')))
 
+const image = new Image();
+image.src = base64Image;
+image.onload(() => {
+    ... image.height
+    ctx.drawImage(image,0,0,width,height);
+})
+canvas.toBlob();
 
 fetch
 response.json()
@@ -52,8 +59,6 @@ object.toString() (make function to String)
 
 new FileReader()
 reader.readAsDataURL(blob) // make blob to base64
-
-
 
 String.replace()
 
