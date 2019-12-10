@@ -12,6 +12,20 @@ const convertBlobToBase64 = blob => new Promise((resolve, reject) => {
 // refer to https://stackoverflow.com/questions/12395722/can-the-window-object-be-modified-from-a-chrome-extension,
 // try injecting script into web page
 
+const getImageWidth = () => {
+    return new Promise((resolve,reject) => {
+        const widthKey = 'imageWidth';
+        try {
+            chrome.storage.local.get(widthKey, (result) => {
+                resolve(result[widthKey])
+            })
+        } catch (error) {
+            console.error(error);
+            reject(error)
+        }
+    })
+}
+
 const getBaseURL = () => {
     return new Promise((resolve,reject) => {
         const savedKey = 'sbssrUrl';
@@ -120,13 +134,40 @@ const handleFillForm = async (request, sender, sendResponse) => {
     /// remove previous images
     // console.log(innerDoc.getElementsByTagName('image'));
     const dext5Body = innerDoc.getElementById('dext_body');    
-
+    // get image width from local storage
+    const savedWidth = await getImageWidth();
+    console.log(`savedWdith : ${savedWidth}`);
     /// append image (as base64)
     imageBlobs.map(async blob => {
-        const imgTag = innerDoc.createElement('image');
+
         const base64Img = await convertBlobToBase64(blob);
-        dext5Body.append(imgTag);
-        imgTag.setAttribute('src', base64Img);
+        // append original image
+        // const imgTag = innerDoc.createElement('image');
+        // dext5Body.append(imgTag);
+        // imgTag.setAttribute('src', base64Img);
+        
+        /// append small image
+        const canvas = innerDoc.createElement('canvas');
+        const image = new Image();
+        image.src = base64Img;
+        image.onload = () => {
+            const width = savedWidth;
+            const scaleFactor = width / image.width;
+            const height = image.height * scaleFactor;
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(image,0,0,width,height);
+            // direct appending canvas show images well but can't not be saved (dext5)
+            // dext5Body.append(canvas);
+            ctx.canvas.toBlob( async blob => {
+                const modifiedBase64Img = await convertBlobToBase64(blob);
+                const imgTag = innerDoc.createElement('image');
+                dext5Body.append(imgTag);
+                imgTag.setAttribute('src', modifiedBase64Img);
+            })
+        }
+
     })
 
     // remove previous link
