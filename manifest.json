@@ -3,7 +3,7 @@
     "version": "1.0.2",
     "description": "fill html form using ajax response",
     "manifest_version": 2,
-    "permissions" : ["tabs","declarativeContent","contextMenus","storage"],
+    "permissions" : ["tabs","declarativeContent","contextMenus","storage","webNavigation"],
     "background" : {
         "scripts" : ["background.js"],
         "persistent" : false
