@@ -17,7 +17,8 @@ const getImageWidth = () => {
         const widthKey = 'imageWidth';
         try {
             chrome.storage.local.get(widthKey, (result) => {
-                resolve(result[widthKey])
+                const width = result[widthKey] || 500;
+                resolve(width);
             })
         } catch (error) {
             console.error(error);
@@ -31,7 +32,8 @@ const getBaseURL = () => {
         const savedKey = 'sbssrUrl';
         try {
             chrome.storage.local.get(savedKey, (result) => {
-                resolve(result[savedKey])
+                const url = result[savedKey] || 'http://10.10.1.14:3002/infra/sbssr/api';
+                resolve(url)
             })
         } catch (error) {
             console.error(error);
