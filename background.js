@@ -15,6 +15,20 @@ const getBaseURL = () => {
     })
 }
 
+const getFromDays = () => {
+    return new Promise((resolve,reject) => {
+        const savedKey = 'fromDays';
+        try {
+            chrome.storage.local.get(savedKey, (result) => {
+                resolve(result[savedKey])
+            })
+        } catch (error) {
+            console.error(error);
+            reject(error)
+        }
+    })    
+}
+
 const getSRBody = async (sr_id) => {
     try {
         const baseUrl = await getBaseURL();
@@ -44,6 +58,7 @@ const getSRReply = async (sr_id) => {
 const getTodaySRList = async () => {
     try {
         const now = new Date();
+        const fromDays = await getFromDays();
         const todayString = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
         const baseUrl = await getBaseURL();
         const SR_GETLIST_URL = `${baseUrl}/sr/list?fromDate=${todayString}&siisSaved=N`;
