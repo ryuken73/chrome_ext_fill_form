@@ -19,8 +19,8 @@ const getFromDays = () => {
     return new Promise((resolve,reject) => {
         const savedKey = 'fromDays';
         try {
-            chrome.storage.local.get(savedKey, (result) => {
-                resolve(result[savedKey])
+            chrome.storage.local.get(savedKey, (result) => {                
+                resolve(result[savedKey] || 7);
             })
         } catch (error) {
             console.error(error);
@@ -57,11 +57,20 @@ const getSRReply = async (sr_id) => {
 
 const getTodaySRList = async () => {
     try {
-        const now = new Date();
-        const fromDays = await getFromDays();
-        const todayString = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+        const fromDate = new Date();
+        let fromDays = 7;
+        try {
+            fromDays = await getFromDays();
+        } catch (err) {
+            console.error(err);
+        }
+        console.log(fromDays)
+        fromDate.setDate(fromDate.getDate() - fromDays); 
+        //const todayString = `${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`;
+        console.log(fromDate);
+        const fromDaysString = `${fromDate.getFullYear()}/${fromDate.getMonth() + 1}/${fromDate.getDate()}`;
         const baseUrl = await getBaseURL();
-        const SR_GETLIST_URL = `${baseUrl}/sr/list?fromDate=${todayString}&siisSaved=N`;
+        const SR_GETLIST_URL = `${baseUrl}/sr/list?fromDate=${fromDaysString}&siisSaved=N`;
         const rawResponse = await fetch(SR_GETLIST_URL);
         const response = await rawResponse.json();
         if(response.success) return response.result;
